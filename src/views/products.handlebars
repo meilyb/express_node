@@ -1,0 +1,19 @@
+{{#if isAvailable}}
+<p>товар есть в наличии </p>
+{{else}}
+<p>товара нет в наличии </p>
+{{/if}}
+<article class="product-detail">
+<h2>{{product.name}}</h2>
+<p>артикул: {{product.id}}</p>
+<p>цена: {{product.price}}</p>
+<p>категория: {{product.category}}</p>
+<p>{{product.description}}</p>
+{{#if isAvailable}}
+<p>товар есть в наличии </p>
+{{else}}
+<p>товара нет в наличии </p>
+{{/if}}
+<a href="/products">верн6уться в каталог</a>
+
+</article>
