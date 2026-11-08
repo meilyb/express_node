@@ -1,0 +1,116 @@
+*{
+    margin: 0;
+    box-sizing: border-box;
+    padding: 0;
+}
+body{
+    background-color: #fff;
+    color: black;
+}
+h1{
+    font-size: 44px;
+    margin-bottom: 20px;
+  
+    color: rgb(0, 0, 0);
+}
+h2{
+    font-size: 34px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-family: cursive;
+    color: rgb(0, 0, 0);
+}
+#form{
+    display:flex;
+    flex-direction: column;
+    color: black;
+    font-size: 32px;
+margin: 5px;
+    padding-top: 200px;
+    border: rgb(241, 233, 205) 1px solid;
+    border-radius: 10px;
+    background-color:rgb(243, 223, 213);
+    width: 700px;
+    margin-left: 600px;
+    height: 760px;
+}
+button{
+    background-color: rgb(250, 243, 240);
+   color: black;
+   border-radius:10px ;
+   height: 45px;
+   width: 350px;
+   margin-top: 100px;
+   border: none;
+   font-size: 28px;
+   font-family: Arial, Helvetica, sans-serif;
+
+}
+
+a{
+    color: rgb(0, 0, 0);
+    font-size: 30px;
+    margin-left:15px;
+}
+footer{
+  font-size: 20px;
+  color: rgb(0, 0, 0);
+  font-weight: bold;
+  text-align: center;
+
+  padding: 10px;
+  background-color: rgb(189, 156, 141);
+  height: 50px;
+  border-radius: 10px;
+  width: 700px;
+  margin-left: 600px;
+}
+section{
+    font-weight: bold;
+    text-align: center;
+    margin: 10px;
+    height: 760px;
+    width: 700px;
+    background-color:rgb(243, 223, 213);
+    border-radius: 10px;
+    padding: 10px;
+    padding-top: 200px;
+    margin-left: 600px;
+    
+}
+section a{
+  margin-top:20px ;  
+}
+#main{
+    padding: 10px;
+    text-align: center;
+}
+#divLogin{
+text-align: center;
+
+}
+#divLogin.div{
+  padding: 20px;  
+}
+#divForm{
+    text-align: center;
+}
+label{
+    margin-right: 20px;
+   
+}
+header{
+
+    background-color: rgb(189, 156, 141);
+    border-radius: 10px;
+    width: 700px;
+    margin-left: 600px;
+}
+input{
+    height: 23px;
+    margin-left: 15px;
+}
+p{
+    font-size: 28px;
+    font-weight: bold;
+}

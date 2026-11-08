@@ -1,85 +1,126 @@
-const express = require('express'); 
-import loginRouter from './routes/login.js';
+const express = require('express');
+const { engine } = require('express-handlebars');
+const path = require('path');
 
-const users = []; 
-const app=express();
+const app = express();
+
+const users = [];
+
+const products = [ ];
+
+app.engine(
+  'hbs',
+  engine({
+    extname: '.hbs',
+    defaultLayout: 'main',
+    layoutsDir: path.join(__dirname, 'views', 'layouts'),
+  })
+);
+
+app.set('view engine', 'hbs');
+app.set('views', path.join(__dirname, 'views'));
+
+app.use(express.static(path.join(__dirname, '..', 'public')));
+
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use('/login',loginRouter);
 
-const {engine}=require("express-handlebars");
-const path=require("path");
-const app=express();
-hbs.registerPartials(__dirname+ "/views/partials");
-app.engine("handlebars",engine());
-app.set("view engine","handlebars");
-app.set(
-"views",
-path.join(__dirname,"views")
-);
-app.use(express.static(
-    path.join(__dirname,"../public")
-));
-app.get("/",(req,res)=>{
-    res.render("home",{
-        title:"главная страница"
-    });
-});
-app.get("/products/cheap",(req,res)=>
-{
-    const cheapProducts=products.filter(
-        product=>product.price<3000
-    );
-    res.render("products",{
-        title:"недорогие тогвары",
-        products:cheapProducts
-    });
-});
-app.get("/products/:id",(req,res)=>{
-    const productId=Number(req.params.id);
-    const product=products.find(item=>item.id===productId);
-    if(!product){
-        return res.status(404).send("товар не найден");
-    }
-    res.render("product",{
-        title:product.name,
-        product
-    });
-});
-const sortedProducts=[...products].sort(
-    (a,b)=>a.price-b.price
-);
-app.get("/registration",(req,res)=>{
-    res.render("registration.hbs",{
-        title:"окно регистрации"
-    });
-});
-app.get("/login",(req,res)=>{
-    res.render("login.hbs",{
-        title:"окно входа"
-    });
-});
-app.post("/registration",(req,res)=>{
-    const { username, email, password, passConf } = req.body;
-    if (!username || !email || !password || !passConf) {
-        return showErorr('Пожалуйста, заполните все поля.');
-    }
-    if (password !== passConf) {
-        return showErorr('Пароли не совпадают.');
-    }
-    const isUserExists = users.some(user => user.email.toLowerCase() === email.toLowerCase());
-    if (isUserExists) {
-        return showErorr('Пользователь с таким email уже зарегистрирован.');
-    }
-    const newUser = {
-        username: username,
-        email: email.toLowerCase(),
-        password: password 
-    };
-    users.push(newUser);
-
-});
-app.listen(3000,()=>{
-    console.log("сервер запущен на http://localhost:3000");
+app.get('/', (req, res) => {
+  res.render('home', {
+    title: 'Главная страница',
+  });
 });
 
-export default app;
+app.get('/products/cheap', (req, res) => {
+  const cheapProducts = products.filter((product) => product.price < 3000);
+
+  res.render('products', {
+    title: 'Недорогие товары',
+    products: cheapProducts,
+  });
+});
+
+app.get('/products/:id', (req, res) => {
+  const productId = Number(req.params.id);
+  const product = products.find((item) => item.id === productId);
+
+  if (!product) {
+    return res.status(404).send('Товар не найден');
+  }
+
+  res.render('product', {
+    title: product.name,
+    product,
+  });
+});
+
+const sortedProducts = [...products].sort((a, b) => a.price - b.price);
+
+app.get('/products/sorted', (req, res) => {
+  res.render('products', {
+    title: 'Товары по цене',
+    products: sortedProducts,
+  });
+});
+
+
+app.get('/registration', (req, res) => {
+  res.render('registration', {
+    title: 'Окно регистрации',
+    error: null,
+  });
+});
+
+app.post('/registration', (req, res) => {
+  const { username, email, password, passConf } = req.body;
+
+  if (!username || !email || !password || !passConf) {
+    return res.status(400).render('registration', {
+      title: 'Окно регистрации',
+      error: 'Пожалуйста, заполните все поля.',
+    });
+  }
+
+  if (password !== passConf) {
+    return res.status(400).render('registration', {
+      title: 'Окно регистрации',
+      error: 'Пароли не совпадают.',
+    });
+  }
+
+  const isUserExists = users.some(
+    (user) => user.email.toLowerCase() === email.toLowerCase()
+  );
+
+  if (isUserExists) {
+    return res.status(400).render('registration', {
+      title: 'Окно регистрации',
+      error: 'Пользователь с таким email уже зарегистрирован.',
+    });
+  }
+
+  const newUser = {
+    username,
+    email: email.toLowerCase(),
+    password,
+  };
+
+  users.push(newUser);
+
+  res.redirect('/login');
+});
+
+app.get('/login', (req, res) => {
+  res.render('login', {
+    title: 'Окно входа',
+    error: null,
+  });
+});
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Сервер запущен на http://localhost:${PORT}`);
+});
+
+module.exports = app;
