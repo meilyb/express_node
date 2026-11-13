@@ -1,7 +1,7 @@
 const express = require('express');
 const { engine } = require('express-handlebars');
 const path = require('path');
-
+const session=require('express-session');
 const app = express();
 
 const users = [];
@@ -116,6 +116,31 @@ app.get('/login', (req, res) => {
     error: null,
   });
 });
+app.post('/login', (req, res) => {
+  const { email, password } = req.body;
+
+
+
+  const user = users.find(
+    (user) =>
+      user.email.toLowerCase() === email.toLowerCase() &&
+      user.password === password
+  );
+
+  if (!user) {
+    return res.status(400).render('login', {
+      title: 'Окно входа',
+      error: 'Неверный email или пароль.',
+    });
+  }
+  req.session.user={
+    username:user.username,
+    email:user.email
+  };
+
+  res.redirect('/');
+});
+
 
 const PORT = process.env.PORT || 3000;
 

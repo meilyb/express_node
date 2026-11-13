@@ -1,22 +1,26 @@
 
 <div id="divForm">
- <form action="registration" id="form">
+    {{#if error}}
+  <p id="er">{{error}}</p>
+{{/if}}
+
+ <form action="registration" method="POST" id="form" action="/registration">
 <div>
     <label for=""> создайте имя пользователя: </label>
-    <input type="text" id="username">
+    <input type="text" name="username">
 </div>
 <div>
     <label for=""> введите свою почту: </label>
-    <input type="email" id="email">
+    <input type="email" name="email">
 </div>
 <div>
     <label for=""> придумайте пароль: </label>
-    <input type="password" id="pass">
+    <input type="password" name="pass">
 </div>
 <div>
     <label for=""> подтверждение пароля: </label>
-    <input type="password" id="passConf">
+    <input type="password" name="passConf">
 </div>
-<div><button>ЗАРЕГЕСТРИРОВАТЬСЯ</button></div>
+<div><button type="submit">ЗАРЕГЕСТРИРОВАТЬСЯ</button></div>
  </form>
 </div>
