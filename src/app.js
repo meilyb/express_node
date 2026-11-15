@@ -1,10 +1,12 @@
 const express = require('express');
 const { engine } = require('express-handlebars');
 const path = require('path');
-const session=require('express-session');
+const session = require('express-session');
 const app = express();
+const usersRouter = require('./routes/users');
 
 const users = [];
+app.locals.users=users;
 
 const products = [ ];
 
@@ -100,6 +102,7 @@ app.post('/registration', (req, res) => {
   }
 
   const newUser = {
+    id: users.length + 1,
     username,
     email: email.toLowerCase(),
     password,
@@ -140,6 +143,17 @@ app.post('/login', (req, res) => {
 
   res.redirect('/');
 });
+app.get('/users', (req, res) => {
+  res.render('users', {
+    title: 'Пользователи',
+    error: null,
+  });
+});
+app.use('/users', usersRouter);
+app.post('/users',(req,res)=>{
+  const { email, login, id } = req.body;
+
+})
 
 
 const PORT = process.env.PORT || 3000;

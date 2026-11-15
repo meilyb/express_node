@@ -1,0 +1,29 @@
+    {{#if error}}
+  <p id="er">{{error}}</p>
+{{/if}}
+<div>
+    <table>
+        <caption>таблица пользователей</caption>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>имя пользователя</th>
+                <th>электр. почта</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                 {{#each users}}
+        <tr>
+          <td>{{this.id}}</td>
+          <td>{{this.name}}</td>
+          <td>{{this.email}}</td>
+        </tr>
+      {{/each}}
+            </tr>
+        
+        </tbody>
+
+    </table>
+    <a class="button" href="/">На главную</a>
+</div>
