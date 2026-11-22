@@ -3,10 +3,10 @@ const { engine } = require('express-handlebars');
 const path = require('path');
 const session = require('express-session');
 const app = express();
+const bcrypt=require('bcryptjs')
 const usersRouter = require('./routes/users');
+const User =require('./models/user')
 
-const users = [];
-app.locals.users=users;
 
 const products = [ ];
 
@@ -73,7 +73,7 @@ app.get('/registration', (req, res) => {
   });
 });
 
-app.post('/registration', (req, res) => {
+app.post('/registration', async (req, res) => {
   const { username, email, password, passConf } = req.body;
 
   if (!username || !email || !password || !passConf) {
@@ -89,28 +89,31 @@ app.post('/registration', (req, res) => {
       error: 'Пароли не совпадают.',
     });
   }
-
-  const isUserExists = users.some(
-    (user) => user.email.toLowerCase() === email.toLowerCase()
-  );
-
-  if (isUserExists) {
-    return res.status(400).render('registration', {
-      title: 'Окно регистрации',
-      error: 'Пользователь с таким email уже зарегистрирован.',
+  try{
+    await User.create({
+      username,
+      email,
+      password
     });
+    res.redirect('/login');
+  }catch(error){
+    console.error(error);
+    let message='не удалось зарг-вать пользователя';
+    if(error.name==='SequelizeUniqueConstraintError'){
+      if(error.errors.some(item=>item.path==='username')){
+        message='такое имя пользователя уже занято';
+      }else if(error.errors.some(item=>item.path==='email')){
+        message='такоq email уже занят';
+      }
+    }else if(error.name==='SequelizeValidationError'){
+      message=error.errors.map(item=>item.message).join(' ');
+    }
+    res.render('registration',{
+      title:'регистрация',
+      error:message
+    });
+
   }
-
-  const newUser = {
-    id: users.length + 1,
-    username,
-    email: email.toLowerCase(),
-    password,
-  };
-
-  users.push(newUser);
-
-  res.redirect('/login');
 });
 
 app.get('/login', (req, res) => {
@@ -119,29 +122,44 @@ app.get('/login', (req, res) => {
     error: null,
   });
 });
-app.post('/login', (req, res) => {
+app.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
-
-
-  const user = users.find(
-    (user) =>
-      user.email.toLowerCase() === email.toLowerCase() &&
-      user.password === password
+try{
+  const user=await User.findOne({
+    where:{email}
+  });
+  if(!user){
+    return res.render('login',{
+      title:'вход',
+      error:'неверный email или пароль'
+    });
+  }
+  const isPasswordCorrect=await bcrypt.compare(
+    password,
+    user.password
   );
-
-  if (!user) {
-    return res.status(400).render('login', {
-      title: 'Окно входа',
-      error: 'Неверный email или пароль.',
+  if(!isPasswordCorrect){
+    return res.render('login',{
+      title:'вход',
+      error:'неверный email или пароль'
     });
   }
   req.session.user={
+    id:user.id,
     username:user.username,
     email:user.email
   };
-
   res.redirect('/');
+}catch(error){
+  console.error(error);
+  res.status(500).send('ошиька сервера');
+}
+});
+app.post('/logout',(req,res)=>{
+  req.session.destroy(()=>{
+    res.redirect('/login');
+  });
 });
 app.get('/users', (req, res) => {
   res.render('users', {
